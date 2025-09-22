@@ -15,3 +15,5 @@ Includes all modern Tetris standards, such as:
 Bugs:
 - lock delay has no limit
 
+## Configuration
+Under `main.c`, you will find the option to configure DAS, ARR, SFD, and key binds. The default DAS and ARR is taken from jstris.
