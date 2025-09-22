@@ -1,0 +1,17 @@
+# Tetris 
+
+A simple and hackable (modern) Tetris base written in C (with raylib).
+
+Includes all modern Tetris standards, such as:
+- hard drops and soft drops
+- ghost block
+- guideline SRS (All spins are possible)
+- 90, 180, and 270 rotation 
+- Delay auto shift, Auto repeat rate, and soft drop speed
+- hold
+- next piece queue
+- lock delay
+
+Bugs:
+- lock delay has no limit
+
