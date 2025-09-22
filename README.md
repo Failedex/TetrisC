@@ -2,6 +2,10 @@
 
 A simple and hackable (modern) Tetris base written in C (with raylib).
 
+
+https://github.com/user-attachments/assets/9abfa456-a9a4-4945-a492-bbca095223f1
+
+
 Includes all modern Tetris standards, such as:
 - hard drops and soft drops
 - ghost block
