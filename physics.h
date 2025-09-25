@@ -39,6 +39,7 @@ typedef struct {
     int32_t height;
     uint16_t *board;
     Piece hold;
+    bool already_held;
     ActivePiece active;
 } Game;
 

@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include "physics.h"
 #include "control.h"
+#include "textdisplay.h"
 
 #define boardWidth 10
 #define boardHeight 20
@@ -8,7 +9,7 @@
 
 #define DAS 0.133
 #define ARR 0.010
-#define SFD 0.020
+#define SFD 0.010
 
 int main(void)
 {
@@ -98,6 +99,8 @@ int main(void)
                 }
             }
         }
+
+        display_text((Position){6*pixel, pixel});
 
         EndDrawing();
     }

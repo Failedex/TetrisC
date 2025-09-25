@@ -2,7 +2,7 @@
 IDIR=/usr/local/include
 LDIR=/usr/local/lib
 CC=gcc
-# OBJ= somestuff.o other.o
+OBJ= main.o physics.o randomizer.o srs.o control.o textdisplay.o
 
 CFLAGS=-L$(LDIR) -I$(IDIR) -lraylib -lm
 
@@ -10,8 +10,8 @@ CFLAGS=-L$(LDIR) -I$(IDIR) -lraylib -lm
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 .PHONY: main
-main: main.o physics.o randomizer.o srs.o control.o
+main: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) 
 
-clean: main main.o physics.o randomizer.o srs.o control.o
+clean: $(OBJ)
 	rm -f $^

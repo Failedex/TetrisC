@@ -3,6 +3,7 @@
 #include "physics.h"
 #include "randomizer.h"
 #include "srs.h"
+#include "textdisplay.h"
 
 #define GRAVITY 0.5
 
@@ -53,7 +54,6 @@ static Position collision_data[7][4][4] = {
 
 static Game game;
 static bool *running = NULL;
-static bool already_held = false;
 
 static bool collision_detection(Position offset, uint8_t rotation) 
 {
@@ -93,28 +93,89 @@ static void new_piece(Piece piece)
     }
 }
 
-static void line_clear() 
+static uint8_t line_clear() 
 {
+    uint8_t count = 0;
     for (size_t i = 0; i<game.height; i++) {
         if (game.board[i] == (1<<game.width)-1) {
+            count++;
             for (size_t j = i; j>=1; j--) {
                 game.board[j] = game.board[j-1];
             }
             game.board[0] = 0;
         }
     }
+    return count;
+}
+
+static Piece checkspin() 
+{
+    Position d = {.r = 1, .c = 0};
+    bool spin = true;
+
+    for (int i = 0; i<4; i++) {
+        if (!collision_detection(d, 0)) {
+            spin = false;
+        }
+        int32_t tmp = d.r;
+        d.r = d.c;
+        d.c = -tmp;
+    }
+
+    if (spin) {
+        return game.active.piece;
+    }
+    return N;
+}
+
+static void text_display(Piece spin, uint8_t clears)
+{
+    static uint32_t combo = 0;
+
+    if (clears >= 1) {
+        combo++;
+    } else {
+        combo = 0;
+    }
+    set_combo(combo);
+
+    char* mline[] = {
+        "",
+        "Single",
+        "Double",
+        "Triple",
+        "Quad"
+    };
+    
+    char* pline[] = {
+        "I spin",
+        "J spin",
+        "L spin",
+        "",
+        "S spin",
+        "T spin",
+        "Z spin",
+    };
+
+    if (spin != N) {
+        set_text(pline[spin], mline[clears]);
+    } else if (clears > 0 && clears <= 4) {
+        set_text(mline[clears], "");
+    }
 }
 
 static void lock_piece() 
 {
+    Piece spun = checkspin();
     for (size_t i = 0; i<4; i++) {
         Position pixel = collision_data[game.active.piece][game.active.rotation][i];
         pixel.r += game.active.center.r;
         pixel.c += game.active.center.c;
         game.board[pixel.r] |= (1 << pixel.c);
     }
-    already_held = false;
-    line_clear();
+    game.already_held = false;
+    uint8_t count = line_clear();
+    text_display(spun, count);
     new_piece(next_piece());
 }
 
@@ -131,7 +192,8 @@ void init_game(int width, int height, bool *remote)
     game = (Game){
         .width = width,
         .height = height,
-        .hold = N
+        .hold = N,
+        .already_held = false
     };
     game.board = calloc(sizeof(uint16_t), height);
     running = remote;
@@ -188,7 +250,7 @@ PixelState board_pixel(int r, int c)
     }
 
     return EMPTY;
-};
+}
 
 PixelState hold_display(int r, int c)
 {
@@ -240,6 +302,7 @@ void move_right()
     }
     lock_timer_reset();
 };
+
 void move_rotate(uint8_t rotation) {
     Position offsets[5]; 
     get_offsets(offsets, game.active.piece, game.active.rotation, (game.active.rotation + rotation) % 4);
@@ -274,10 +337,10 @@ void soft_drop()
 
 void hold() 
 {
-    if (already_held) {
+    if (game.already_held) {
         return;
     }
-    already_held = true;
+    game.already_held = true;
     if (game.hold == N) {
         game.hold = game.active.piece;
         new_piece(next_piece());
