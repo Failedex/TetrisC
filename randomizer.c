@@ -1,5 +1,6 @@
 #include "randomizer.h"
 #include <stdlib.h>
+#include <time.h>
 
 static LinkedList bag;
 
@@ -41,6 +42,7 @@ static void bag_append() {
 
 void init_bag() 
 {
+    srand(time(NULL));
     bag.head = NULL;
     bag.tail = NULL;
     bag.size = 0;
